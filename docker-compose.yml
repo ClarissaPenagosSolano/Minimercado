@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  webfrontend:
+    container_name: webfrontend
+    restart: always
+    build:
+      dockerfile: api/Dockerfile
+    ports:
+      - "3000:3000"
+
+  mongo:
+    container_name: mongo
+    image: docker.io/library/mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 1234567890
+
+  mongo-express:
+    container_name: mongo-express
+    image: docker.io/library/mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 1234567890
+      ME_CONFIG_MONGODB_URL: mongodb://root:1234567890@mongo:27017
+
+  jenkins:
+    container_name: jenkins
+    image: docker.io/jenkins/jenkins:lts-jdk11
+    restart: always
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - "./jenkins-data:/var/jenkins_home:rw"
+    user: "0:0"
+
+volumes:
+  db:
+    driver: local
